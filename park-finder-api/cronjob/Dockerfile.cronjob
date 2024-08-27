@@ -1,0 +1,17 @@
+# syntax=docker/dockerfile:1
+
+# Python Base Image
+FROM python:3.9-slim AS builder
+
+# Creating Working 
+WORKDIR /cronjob
+
+# Copying the crontab file 
+COPY cronjob/src /cronjob/src
+COPY cronjob/requirements.txt ./
+
+COPY .env ./
+
+RUN pip3 install -r requirements.txt
+
+COPY cronjob/app.py ./

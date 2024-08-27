@@ -1,0 +1,17 @@
+version: '3'
+services:
+  parking-finder-web:
+    container_name: parking-finder-web
+    build: .
+    ports:
+      - "3100:3100"
+    image: registry.gitlab.com/parking-finder/parking-finder-web/park-finder-web:${TAG}
+    networks:
+      - my-network
+
+
+
+networks:
+  my-network:
+    driver: bridge
+

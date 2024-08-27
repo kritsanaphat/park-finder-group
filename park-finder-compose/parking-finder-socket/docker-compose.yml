@@ -1,0 +1,17 @@
+version: '3'
+services:
+  parking-finder-socket:
+    container_name: parking-finder-socket
+    build: .
+    ports:
+      - "4700:4700"
+    image: registry.gitlab.com/parking-finder/park-finder-socket/park-finder-socket:${TAG}
+    networks:
+      - my-network
+
+
+
+networks:
+  my-network:
+    driver: bridge
+

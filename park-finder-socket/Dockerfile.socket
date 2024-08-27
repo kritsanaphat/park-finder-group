@@ -1,0 +1,25 @@
+# syntax=docker/dockerfile:1
+
+FROM golang:1.19.2-buster AS build
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+
+RUN go mod download
+
+COPY . .
+
+RUN CGO_ENABLED=0 GOOS=linux go build -o /app/parking-finder-socket .
+
+FROM gcr.io/distroless/base-debian10 AS reduce
+
+WORKDIR /
+
+COPY --from=build /app/parking-finder-socket ./
+
+COPY .env ./
+
+
+ENTRYPOINT ["./parking-finder-socket"]
+

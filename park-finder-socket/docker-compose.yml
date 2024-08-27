@@ -1,0 +1,14 @@
+services:
+  parking-finder-socket:
+    container_name: 'parking-finder-socket'
+    image: parking-finder-socket-image  
+    ports:
+      - "4700:4700"
+    build:
+      context: .
+      dockerfile: Dockerfile.socket
+    environment:
+      - .env
+    restart: always
+
+  

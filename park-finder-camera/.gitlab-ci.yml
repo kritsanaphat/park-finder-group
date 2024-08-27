@@ -1,0 +1,45 @@
+stages:
+  - staging-build
+  - staging-deploy
+
+staging-build:
+  stage: staging-build
+  image: docker:latest
+  tags: [docker]
+  services:
+    - docker:20.10.12-dind
+  variables:
+    IMAGE_PATH: $CI_REGISTRY/$CI_PROJECT_PATH
+    CAMERA_IMAGE_TAG: $IMAGE_PATH/park-finder-camera:$CI_COMMIT_REF_SLUG
+
+
+
+  script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker build -f Dockerfile.camera -t $CAMERA_IMAGE_TAG .
+    - docker push $CAMERA_IMAGE_TAG
+
+
+  only:
+    - staging
+
+staging-deploy:
+  image: docker:latest
+  stage: staging-deploy
+  services:
+    - docker:dind
+  tags:
+    - docker
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE" | tr -d '\r' | ssh-add - > /dev/null
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+  script:
+    - ssh -vvv -o "StrictHostKeyChecking=no" -p 22 $TARGET_STAGING
+    - ssh -p22 $TARGET_STAGING "docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY"
+    - ssh -p22 $TARGET_STAGING "cd parking-finder-api-compose/ && export TAG=$CI_COMMIT_REF_NAME && export ENV=staging  && ./deploy-script-parking-finder-camera.sh S "
+  only:
+    - staging
+  

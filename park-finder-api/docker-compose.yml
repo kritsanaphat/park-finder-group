@@ -1,0 +1,43 @@
+services:
+  parking-finder-api:
+    container_name: 'parking-finder-api'
+    image: parking-finder-api-image  
+    ports:
+      - "80:5009"
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    environment:
+      - REDIS_ADDRESS=host.docker.internal:6379
+  
+  parking-finder-cronjob:
+    container_name: 'parking-finder-cronjob'
+    build: 
+      context: .
+      dockerfile: ./cronjob/Dockerfile.cronjob
+    env_file:
+      - ./.env
+    restart: always
+    ports:
+      - 4200:4200
+    command: ["python", "app.py"] 
+    network_mode: bridge
+
+  parking-finder-demo:
+      container_name: 'parking-finder-demo'
+      build: 
+        context: .
+        dockerfile: ./demo/Dockerfile.demo
+      env_file:
+        - ./.env
+      restart: always
+      ports:
+        - 4500:4500
+      command: ["python", "app.py"] 
+      network_mode: bridge
+
+
+  redis:
+    image: "redis:alpine"
+
+

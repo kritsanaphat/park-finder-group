@@ -1,0 +1,20 @@
+version: '3'
+services:
+  parking-finder-camera:
+    container_name: park-finder-camera
+    image: registry.gitlab.com/parking-finder/parking-finder-camera/park-finder-camera:${TAG}
+    ports:
+      - 3000:3000
+    command: ["python", "app.py"]
+    restart: always
+    network_mode: bridge
+
+
+
+networks:
+  my-network:
+    driver: bridge
+
+
+
+

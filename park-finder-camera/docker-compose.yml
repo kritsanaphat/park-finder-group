@@ -1,0 +1,14 @@
+services:
+  
+  parking-finder-camera:
+    container_name: 'parking-finder-camera'
+    build: 
+      context: .
+      dockerfile: ./Dockerfile.camera
+    env_file:
+      - .env
+    # restart: always
+    ports:
+      - 3000:3000
+    command: ["python", "app.py"] 
+    network_mode: bridge

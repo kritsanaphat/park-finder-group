@@ -1,0 +1,14 @@
+services:
+  parking-finder-process:
+    container_name: 'parking-finder-process'
+    image: parking-finder-process-image  
+    ports:
+      - "3000:4800"
+    build:
+      context: .
+      dockerfile: Dockerfile.process
+    environment:
+      - .env
+    restart: always
+
+  
